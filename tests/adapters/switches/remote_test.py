@@ -832,6 +832,18 @@ class RemoteSwitchTest(unittest.TestCase):
 
         self.switch.set_bond_description(123, "Resistance is futile")
 
+    def test_set_bond_description_with_empty_description(self):
+        self.requests_mock.should_receive("put").once().with_args(
+            url=self.netman_url+'/switches/toto/bonds/123/description',
+            headers=self.headers,
+            data=''
+        ).and_return(
+            Reply(
+                content='',
+                status_code=204))
+
+        self.switch.set_bond_description(123, "")
+
     def test_remove_bond_description(self):
         self.requests_mock.should_receive("delete").once().with_args(
             url=self.netman_url+'/switches/toto/bonds/123/description',

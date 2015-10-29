@@ -1083,6 +1083,16 @@ class SwitchApiTest(BaseApiTest):
 
         assert_that(code, equal_to(204))
 
+    def test_set_interface_description_with_empty_description(self):
+        self.switch_factory.should_receive('get_switch').with_args('my.switch').and_return(self.switch_mock).once().ordered()
+        self.switch_mock.should_receive('connect').once().ordered()
+        self.switch_mock.should_receive('set_interface_description').with_args("FastEthernet0/4", "").once().ordered()
+        self.switch_mock.should_receive('disconnect').once().ordered()
+
+        result, code = self.put("/switches/my.switch/interfaces/FastEthernet0/4/description", raw_data="")
+
+        assert_that(code, equal_to(204))
+
     def test_remove_interface_description(self):
         self.switch_factory.should_receive('get_switch').with_args('my.switch').and_return(self.switch_mock).once().ordered()
         self.switch_mock.should_receive('connect').once().ordered()

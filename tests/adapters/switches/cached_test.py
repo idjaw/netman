@@ -379,11 +379,15 @@ class CacheSwitchTest(unittest.TestCase):
             self.switch.get_vlans(),
             is_([Vlan(123, vrf_forwarding=None)]))
 
-
     def test_set_interface_description(self):
         self.real_switch_mock.should_receive("set_interface_description").once() \
             .with_args('xe-1/0/2', 'interface-description')
         self.switch.set_interface_description('xe-1/0/2', 'interface-description')
+
+    def test_set_interface_description_without_description(self):
+        self.real_switch_mock.should_receive("set_interface_description").once() \
+            .with_args('xe-1/0/2', '')
+        self.switch.set_interface_description('xe-1/0/2', '')
 
     def test_remove_interface_description(self):
         self.real_switch_mock.should_receive("remove_interface_description").once() \

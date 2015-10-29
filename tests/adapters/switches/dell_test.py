@@ -1019,6 +1019,16 @@ class DellTest(unittest.TestCase):
 
         self.switch.set_interface_description("ethernet 1/g10", "Hey")
 
+    def test_set_interface_description_without_description(self):
+        self.command_setup()
+
+        with self.configuring_and_committing():
+            self.mocked_ssh_client.should_receive("do").with_args("interface ethernet 1/g10").once().ordered().and_return([])
+            self.mocked_ssh_client.should_receive("do").with_args("description \"\"").once().ordered().and_return([])
+            self.mocked_ssh_client.should_receive("do").with_args("exit").once().ordered().and_return([])
+
+        self.switch.set_interface_description("ethernet 1/g10", "")
+
     def test_set_interface_description_invalid_interface(self):
         self.command_setup()
 

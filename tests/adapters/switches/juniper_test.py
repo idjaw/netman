@@ -3044,7 +3044,7 @@ class JuniperTest(unittest.TestCase):
                     <interfaces>
                       <interface>
                         <name>ge-0/0/6</name>
-                        <description>Resistance is futile</name>
+                        <description>Resistance is futile</description>
                       </interface>
                     </interfaces>
                   </configuration>
@@ -3052,6 +3052,24 @@ class JuniperTest(unittest.TestCase):
             """)).and_return(an_ok_response())
 
         self.switch.set_interface_description("ge-0/0/6", "Resistance is futile")
+
+    def test_set_interface_description_succeeds_without_description(self):
+        with self.expecting_successful_transaction():
+
+            self.netconf_mock.should_receive("edit_config").once().with_args(target="candidate", config=is_xml("""
+                <config>
+                  <configuration>
+                    <interfaces>
+                      <interface>
+                        <name>ge-0/0/6</name>
+                        <description></description>
+                      </interface>
+                    </interfaces>
+                  </configuration>
+                </config>
+            """)).and_return(an_ok_response())
+
+        self.switch.set_interface_description("ge-0/0/6", "")
 
     def test_set_interface_description_on_unkown_interface_raises(self):
         with self.expecting_failed_transaction():
@@ -3062,7 +3080,7 @@ class JuniperTest(unittest.TestCase):
                     <interfaces>
                       <interface>
                         <name>ge-0/0/99</name>
-                        <description>Resistance is futile</name>
+                        <description>Resistance is futile</description>
                       </interface>
                     </interfaces>
                   </configuration>
