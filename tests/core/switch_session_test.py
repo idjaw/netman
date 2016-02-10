@@ -39,6 +39,7 @@ class SwitchSessionManagerTest(TestCase):
         self.session_manager.session_storage.should_receive('add').with_args(
             'patate', self.switch_mock.switch_descriptor
         ).once()
+        self.switch_mock.should_receive('connect').once()
 
         assert_that(self.session_manager.open_session(self.switch_mock, 'patate'), is_('patate'))
         assert_that(self.session_manager.get_switch_for_session('patate'), is_(self.switch_mock))
@@ -48,6 +49,7 @@ class SwitchSessionManagerTest(TestCase):
         self.session_manager.session_storage.should_receive('add').with_args(
             'patate', self.switch_mock.switch_descriptor
         ).once()
+        self.switch_mock.should_receive('connect').once()
 
         self.session_manager.open_session(self.switch_mock, 'patate')
 
@@ -59,10 +61,15 @@ class SwitchSessionManagerTest(TestCase):
         self.session_manager.session_storage.should_receive('add').with_args(
             'patate', self.switch_mock.switch_descriptor
         ).once()
+        self.switch_mock.should_receive('connect').once()
 
         assert_that(self.session_manager.open_session(self.switch_mock, 'patate'), is_('patate'))
         assert_that(self.session_manager.get_switch_for_session('patate'), is_(self.switch_mock))
 
+        self.session_manager.session_storage.should_receive(
+            'get_switch_for_session'
+        ).with_args('patate').and_return(self.switch_mock)
+        self.switch_mock.should_receive('disconnect').once()
         self.session_manager.session_storage.should_receive('remove').with_args('patate')
 
         self.session_manager.close_session('patate')
@@ -76,9 +83,14 @@ class SwitchSessionManagerTest(TestCase):
         self.session_manager.session_storage.should_receive('add').with_args(
             'patate', self.switch_mock.switch_descriptor
         ).once().ordered()
+        self.switch_mock.should_receive('connect').once()
 
         self.session_manager.open_session(self.switch_mock, 'patate')
 
+        self.session_manager.session_storage.should_receive(
+            'get_switch_for_session'
+        ).with_args('patate').and_return(self.switch_mock)
+        self.switch_mock.should_receive('disconnect').once()
         self.session_manager.session_storage.should_receive('remove').with_args('patate').and_raise(NetmanException)
 
         self.session_manager.close_session('patate')
@@ -130,6 +142,7 @@ class SwitchSessionManagerTest(TestCase):
         self.session_manager.session_storage.should_receive('add').with_args(
             'patate', self.switch_mock.switch_descriptor
         ).once()
+        self.switch_mock.should_receive('connect').once().ordered()
 
         session_id = self.session_manager.open_session(self.switch_mock, 'patate')
 
@@ -148,6 +161,7 @@ class SwitchSessionManagerTest(TestCase):
         self.session_manager.session_storage.should_receive('add').with_args(
             'patate', self.switch_mock.switch_descriptor
         ).once()
+        self.switch_mock.should_receive('connect').once()
 
         session_id = self.session_manager.open_session(self.switch_mock, 'patate')
 
@@ -168,6 +182,7 @@ class SwitchSessionManagerTest(TestCase):
         self.session_manager.session_storage.should_receive('add').with_args(
             'patate', self.switch_mock.switch_descriptor
         ).and_raise(NetmanException)
+        self.switch_mock.should_receive('connect').once().ordered()
 
         self.session_manager.open_session(self.switch_mock, 'patate')
 
@@ -178,6 +193,7 @@ class SwitchSessionManagerTest(TestCase):
         self.session_manager.session_storage.should_receive('add').with_args(
             'patate', self.switch_mock.switch_descriptor
         ).once()
+        self.switch_mock.should_receive('connect').once().ordered()
 
         session_id = self.session_manager.open_session(self.switch_mock, 'patate')
 
@@ -196,6 +212,7 @@ class SwitchSessionManagerTest(TestCase):
         self.session_manager.session_storage.should_receive('add').with_args(
             'patate', self.switch_mock.switch_descriptor
         ).once()
+        self.switch_mock.should_receive('connect').once().ordered()
 
         session_id = self.session_manager.open_session(self.switch_mock, 'patate')
 
