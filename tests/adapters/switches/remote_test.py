@@ -27,7 +27,7 @@ from tests.api import open_fixture
 from netman.adapters.switches.remote import RemoteSwitch, factory
 from netman.core.objects.access_groups import IN, OUT
 from netman.core.objects.exceptions import UnknownBond, VlanAlreadyExist, BadBondLinkSpeed, LockedSwitch, \
-    NetmanException
+    NetmanException, UnknownSession
 from netman.core.objects.port_modes import ACCESS, TRUNK, DYNAMIC
 from netman.core.objects.switch_descriptor import SwitchDescriptor
 
@@ -151,6 +151,26 @@ class RemoteSwitchTest(unittest.TestCase):
                 status_code=500))
 
         with self.assertRaises(AnException):
+            self.switch.connect()
+
+    @mock.patch('uuid.uuid4')
+    def test_connect_fails_with_unknown_session_will_try_to_reconnect(self, m_uuid):
+        m_uuid.return_value = '0123456789'
+        self.headers['Netman-Session-Id'] = '0123456789'
+        self.requests_mock.should_receive("post").once().with_args(
+            url=self.netman_url+'/switches-sessions/0123456789',
+            headers=self.headers,
+            data=JsonData(hostname="toto")
+        ).and_return(
+            Reply(
+                content=json.dumps({
+                    "error": "",
+                    "error-module": AnException.__module__,
+                    "error-class": AnException.__name__
+                }),
+                status_code=500))
+
+        with self.assertRaises(UnknownSession):
             self.switch.connect()
 
     @mock.patch('uuid.uuid4')
